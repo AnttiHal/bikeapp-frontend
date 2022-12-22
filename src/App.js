@@ -1,25 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import { useQuery } from '@apollo/client'
+import { useState } from 'react'
+import './App.css'
+import JourneyList from './components/JourneyList'
+import StationList from './components/StationList'
+import { 
+  ALL_STATIONS, 
+  JOURNEY_COUNT
+} from './queries'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from "react-router-dom"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
 
-export default App;
+  const App = () => {
+    
+    
+    const count = useQuery(JOURNEY_COUNT)
+    const allStations = useQuery(ALL_STATIONS)
+    
+    
+  
+    
+    if (count.loading || allStations.loading )  {
+      return <div>loading...</div>
+    }
+
+    
+    return (
+      <Router>
+        <div>
+          <Link to="/">home</Link>
+          <Link to="/journeys">Journeys</Link>
+          <Link to="/stations">Stations</Link>
+        </div>
+
+        <Routes>
+          <Route path="/journeys" element={
+            <div>
+              
+              <JourneyList/>
+            </div>}/>
+          <Route path="/stations" element={<StationList stationData={allStations.data} />} />
+          <Route path="/" element={
+            <div>
+              <h1>Helsinki city bike app</h1>
+            </div>} />
+        </Routes>
+      </Router>
+    )
+  }
+  
+  export default App
